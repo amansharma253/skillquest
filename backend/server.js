@@ -1,32 +1,60 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const userRoutes = require('./routes/users');
-const challengeRoutes = require('./routes/challenges');
-
-dotenv.config();
+const jwt = require('jsonwebtoken');
+const http = require('http'); // Needed for Socket.IO
+const { Server } = require('socket.io'); // Socket.IO server
+require('dotenv').config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET; // From .env (your S5wWyuMN5... key)
+
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/challenges', challengeRoutes);
+// JWT authentication middleware
+const authMiddleware = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'No token, authorization denied' });
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded.userId;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Token is not valid' });
+  }
+};
 
-// Root Route
-app.get('/', (req, res) => {
-  res.send('SkillQuest Backend Running');
+// Create HTTP server and integrate Socket.IO
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3001', // Frontend URL
+    methods: ['GET', 'POST']
+  }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Socket.IO connection handler
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+  socket.on('disconnect', () => console.log('User disconnected:', socket.id));
+});
+
+// Make io available to routes
+app.set('io', io);
+
+// Routes
+app.use('/api/users', require('./routes/users'));
+app.use('/api/challenges', require('./routes/challenges')(authMiddleware));
+
+// Root endpoint
+app.get('/', (req, res) => res.send('SkillQuest Backend Running'));
+
+// Start server
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

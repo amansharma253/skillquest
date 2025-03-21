@@ -1,48 +1,62 @@
 .App {
   text-align: center;
-  font-family: Arial, sans-serif;
-  max-width: 800px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #f0f2f5;
+  padding: 30px;
+  background: linear-gradient(to bottom, #e6f0fa, #ffffff);
   min-height: 100vh;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
 h1 {
   color: #1a73e8;
-  font-size: 2.5em;
-  margin-bottom: 20px;
+  font-size: 3em;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
-  color: #333;
-  font-size: 1.5em;
-  margin-top: 20px;
+  color: #444;
+  font-size: 1.8em;
+  margin: 25px 0 15px;
+  border-bottom: 2px solid #1a73e8;
+  padding-bottom: 5px;
 }
 
-input {
+input, select {
   display: block;
-  margin: 10px auto;
-  padding: 10px;
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1em;
+  margin: 15px auto;
+  padding: 12px;
+  width: 300px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 8px rgba(26, 115, 232, 0.3);
+  outline: none;
 }
 
 button {
-  padding: 10px 20px;
-  margin: 5px;
+  padding: 12px 25px;
+  margin: 8px;
   background-color: #1a73e8;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 1.1em;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
   background-color: #1557b0;
+  transform: scale(1.05);
 }
 
 ul {
@@ -54,23 +68,82 @@ li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  margin: 8px 0;
+  padding: 15px;
+  margin: 12px 0;
   background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1.1em;
+  transition: transform 0.2s;
+}
+
+li:hover {
+  transform: translateY(-2px);
+}
+
+li.easy {
+  background-color: #e6ffe6;
+  border-left: 4px solid #28a745;
+}
+
+li.medium {
+  background-color: #fff3e6;
+  border-left: 4px solid #ff9800;
+}
+
+li.hard {
+  background-color: #ffe6e6;
+  border-left: 4px solid #d32f2f;
 }
 
 li button {
   background-color: #28a745;
-  padding: 6px 12px;
+  padding: 8px 16px;
 }
 
 li button:hover {
   background-color: #218838;
+  transform: scale(1.05);
 }
 
 p {
-  color: #666;
-  font-size: 1.1em;
+  color: #555;
+  font-size: 1.2em;
+  margin: 15px 0;
+  font-style: italic;
+}
+
+.progress-bar {
+  width: 50%;
+  margin: 20px auto;
+  background-color: #ddd;
+  border-radius: 20px;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #1a73e8;
+  border-radius: 20px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 0.9em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.create-challenge {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
