@@ -4,61 +4,81 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET; // From .env (S5wWyuMN5zuQ2RcI72T1EMix1yvwSap085a9ybz-hW-1hmIASEZhznrWVdL3X17FfX0aNO-AlPMHpRUU52c2cg)
+const JWT_SECRET = process.env.JWT_SECRET; // Secret for JWT signing, from .env
 
-// Register a new user
+// POST /api/users/register - Register a new user
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
+  console.log('Register attempt:', { username, password }); // Log incoming request
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword });
-    await user.save();
+    if (!username || !password) {
+      console.log('Missing username or password'); // Log validation failure
+      return res.status(400).json({ error: 'Username and password required' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10); // Hash password with 10 salt rounds
+    console.log('Password hashed:', hashedPassword); // Log hash success
+    const user = new User({ 
+      username, 
+      password: hashedPassword,
+      isAdmin: username === 'admin' ? true : false // Temp: Set isAdmin true for 'admin' username
+    });
+    await user.save(); // Save user to MongoDB
+    console.log('User saved:', user); // Log save success
     res.status(201).json({ message: 'User registered', username: user.username });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('Registration failed:', err.message, err.stack); // Log full error details
+    res.status(400).json({ error: err.message || 'Registration failed' }); // Handle errors
   }
 });
 
-// Login and return JWT token
+// POST /api/users/login - Login an existing user
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log('Login attempt:', { username }); // Log login attempt
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }); // Find user by username
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      console.log('Invalid credentials for:', username); // Log invalid login
+      return res.status(400).json({ error: 'Invalid credentials' }); // Wrong username or password
     }
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token, user });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Generate JWT
+    console.log('Login success:', username); // Log successful login
+    res.json({ token, user }); // Return token and user data (including isAdmin)
   } catch (err) {
-    res.status(500).json({ error: 'Server error' });
+    console.error('Login failed:', err.message); // Log login errors
+    res.status(500).json({ error: 'Server error' }); // Handle unexpected errors
   }
 });
 
-// Get top 5 users for leaderboard - MOVED ABOVE :id to avoid route conflict
+// GET /api/users/leaderboard - Fetch top 5 users by essence
 router.get('/leaderboard', async (req, res) => {
   try {
     const leaderboard = await User.find()
       .sort({ essence: -1 }) // Sort by essence descending
-      .limit(5) // Top 5 users
-      .select('username essence rank'); // Only these fields
+      .limit(5)             // Limit to top 5
+      .select('username essence rank'); // Only return these fields
+    console.log('Leaderboard fetched:', leaderboard); // Log leaderboard data
     res.json(leaderboard);
-    // Emit leaderboard update to all connected clients
-    const io = req.app.get('io');
-    io.emit('leaderboardUpdate', leaderboard);
+    const io = req.app.get('io'); // Get Socket.IO instance from app
+    io.emit('leaderboardUpdate', leaderboard); // Broadcast update to all clients
   } catch (err) {
-    console.error(err);
+    console.error('Leaderboard error:', err.message); // Log errors
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Get user by ID - KEEP THIS BELOW SPECIFIC ROUTES
+// GET /api/users/:id - Fetch user by ID (for future use)
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      console.log('User not found:', req.params.id); // Log missing user
+      return res.status(404).json({ error: 'User not found' });
+    }
+    console.log('User fetched:', user.username); // Log found user
     res.json(user);
   } catch (err) {
-    console.error(err);
+    console.error('User fetch error:', err.message); // Log errors
     res.status(500).json({ error: 'Server error' });
   }
 });

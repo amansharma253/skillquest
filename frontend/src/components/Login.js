@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-// Login component - handles user registration and login
 function Login({ setUser, setToken, setMessage }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  // Register new user via POST /api/users/register
   const handleRegister = async () => {
+    console.log('Sending:', { username, password });
     try {
       const response = await axios.post('http://localhost:5000/api/users/register', { username, password });
       setMessage(`Registered: ${response.data.username}`);
       setUsername('');
       setPassword('');
     } catch (err) {
+      console.log('Error:', err.response?.data || err.message);
       setMessage(err.response?.data?.error || 'Error registering');
     }
   };
 
-  // Login existing user via POST /api/users/login
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
@@ -33,21 +32,31 @@ function Login({ setUser, setToken, setMessage }) {
   };
 
   return (
-    <div>
-      <input 
-        type="text" 
-        placeholder="Username" 
-        value={username} 
-        onChange={(e) => setUsername(e.target.value)} 
-      />
-      <input 
-        type="password" 
-        placeholder="Password" 
-        value={password} 
-        onChange={(e) => setPassword(e.target.value)} 
-      />
-      <button onClick={handleRegister}>Register</button>
-      <button onClick={handleLogin}>Login</button>
+    <div className="split-background">
+      <div className="login-container">
+        <div className="typing-container">SkillQuest</div>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <div className="button-group">
+          <button className="register" onClick={handleRegister}>
+            Register
+          </button>
+          <button className="login" onClick={handleLogin}>
+            Login
+          </button>
+        </div>
+        {setMessage && <p>{setMessage}</p>}
+      </div>
     </div>
   );
 }
