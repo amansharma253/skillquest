@@ -6,15 +6,14 @@ function Login({ setUser, setToken, setMessage }) {
   const [password, setPassword] = useState('');
 
   const handleRegister = async () => {
-    console.log('Sending:', { username, password });
     try {
       const response = await axios.post('http://localhost:5000/api/users/register', { username, password });
-      setMessage(`Registered: ${response.data.username}`);
+      setMessage(`Registered successfully as: ${response.data.username}`);
       setUsername('');
       setPassword('');
     } catch (err) {
-      console.log('Error:', err.response?.data || err.message);
-      setMessage(err.response?.data?.error || 'Error registering');
+      const errorMessage = err.response?.data?.error || 'An error occurred during registration.';
+      setMessage(errorMessage);
     }
   };
 
@@ -23,11 +22,12 @@ function Login({ setUser, setToken, setMessage }) {
       const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
       setUser(response.data.user);
       setToken(response.data.token);
-      setMessage(`Logged in as ${response.data.user.username}`);
+      setMessage(`Logged in successfully as: ${response.data.user.username}`);
       setUsername('');
       setPassword('');
     } catch (err) {
-      setMessage(err.response?.data?.error || 'Error logging in');
+      const errorMessage = err.response?.data?.error || 'An error occurred during login.';
+      setMessage(errorMessage);
     }
   };
 
@@ -55,7 +55,6 @@ function Login({ setUser, setToken, setMessage }) {
             Login
           </button>
         </div>
-        {setMessage && <p>{setMessage}</p>}
       </div>
     </div>
   );

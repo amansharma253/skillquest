@@ -1,6 +1,7 @@
 const express = require('express');
 const Challenge = require('../models/Challenge');
 const User = require('../models/User');
+const { ranks } = require('../config/ranks'); // Import ranks configuration
 
 module.exports = (authMiddleware) => {
   const router = express.Router();
@@ -89,13 +90,23 @@ module.exports = (authMiddleware) => {
       if (user.completedChallenges.includes(challengeId)) {
         return res.status(400).json({ error: 'Challenge already completed' });
       }
+
+      // Update user's completed challenges and essence
       user.completedChallenges.push(challengeId);
       user.essence += challenge.essenceReward;
-      if (user.essence >= 100) user.rank = 'Master';      // Update rank based on essence
-      else if (user.essence >= 50) user.rank = 'Journeyman';
-      else user.rank = 'Apprentice';
+
+      // Determine the user's rank based on their essence
+      const userRank = ranks
+        .slice()
+        .reverse()
+        .find((rank) => user.essence >= rank.minEssence)?.name || 'Apprentice';
+      user.rank = userRank;
+
       await user.save();
+
       res.json(user);
+
+      // Emit leaderboard update
       const leaderboard = await User.find()
         .sort({ essence: -1 })
         .limit(5)

@@ -5,22 +5,23 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET; // Secret for JWT signing, from .env
+const ADMIN_KEY = process.env.ADMIN_KEY; // Secret admin key, from .env
 
 // POST /api/users/register - Register a new user
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
-  console.log('Register attempt:', { username, password }); // Log incoming request
+  console.log('Register attempt:', { username }); // Log incoming request
   try {
     if (!username || !password) {
       console.log('Missing username or password'); // Log validation failure
       return res.status(400).json({ error: 'Username and password required' });
     }
-    const hashedPassword = await bcrypt.hash(password, 10); // Hash password with 10 salt rounds
+    const hashedPassword = await bcrypt.hash(password, 12); // Increase salt rounds to 12
     console.log('Password hashed:', hashedPassword); // Log hash success
     const user = new User({ 
       username, 
       password: hashedPassword,
-      isAdmin: username === 'admin' ? true : false // Temp: Set isAdmin true for 'admin' username
+      isAdmin: false // Default to non-admin
     });
     await user.save(); // Save user to MongoDB
     console.log('User saved:', user); // Log save success
@@ -28,6 +29,35 @@ router.post('/register', async (req, res) => {
   } catch (err) {
     console.error('Registration failed:', err.message, err.stack); // Log full error details
     res.status(400).json({ error: err.message || 'Registration failed' }); // Handle errors
+  }
+});
+
+// POST /api/users/register-admin - Register a new admin user
+router.post('/register-admin', async (req, res) => {
+  const { username, password, adminKey } = req.body;
+  console.log('Admin register attempt:', { username }); // Log incoming request
+  try {
+    if (!username || !password || !adminKey) {
+      console.log('Missing username, password, or admin key'); // Log validation failure
+      return res.status(400).json({ error: 'Username, password, and admin key required' });
+    }
+    if (adminKey !== ADMIN_KEY) {
+      console.log('Invalid admin key'); // Log invalid admin key
+      return res.status(403).json({ error: 'Invalid admin key' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 12); // Increase salt rounds to 12
+    console.log('Password hashed:', hashedPassword); // Log hash success
+    const user = new User({ 
+      username, 
+      password: hashedPassword,
+      isAdmin: true // Set admin privileges
+    });
+    await user.save(); // Save admin user to MongoDB
+    console.log('Admin user saved:', user); // Log save success
+    res.status(201).json({ message: 'Admin user registered', username: user.username });
+  } catch (err) {
+    console.error('Admin registration failed:', err.message, err.stack); // Log full error details
+    res.status(400).json({ error: err.message || 'Admin registration failed' }); // Handle errors
   }
 });
 
