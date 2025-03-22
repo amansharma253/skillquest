@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const http = require('http');
 const { Server } = require('socket.io');
 const rateLimit = require('express-rate-limit'); // Import express-rate-limit
+const compression = require('compression'); // Import compression
 require('dotenv').config();
 
 const app = express();
@@ -14,9 +15,10 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Middleware
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'] }));
 app.use(express.json());
+app.use(compression()); // Enable compression for all responses
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB error:', err));
 

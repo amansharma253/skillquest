@@ -48,17 +48,36 @@ function ChallengeList({ user, token, challenges, setUser, setMessage, fetchChal
         <p>No daily challenge available.</p>
       )}
 
-      <h2>Available Challenges</h2>
-      <ul>
-        {challenges
-          .filter(challenge => !user.completedChallenges.includes(challenge._id))
-          .map(challenge => (
-            <li className={challenge.difficulty.toLowerCase()} key={challenge._id}>
-              {challenge.title} ({challenge.difficulty}) - {challenge.essenceReward} Essence
-              <button onClick={() => handleCompleteChallenge(challenge._id)}>Complete</button>
-            </li>
-          ))}
-      </ul>
+      <div className="container py-4">
+        <h2 className="text-secondary mb-4">Available Challenges</h2>
+        <ul className="list-group">
+          {challenges
+            .filter(challenge => !user.completedChallenges.includes(challenge._id))
+            .map(challenge => (
+              <li
+                key={challenge._id}
+                className={`list-group-item d-flex justify-content-between align-items-center ${
+                  challenge.difficulty === 'Easy'
+                    ? 'list-group-item-success'
+                    : challenge.difficulty === 'Medium'
+                    ? 'list-group-item-warning'
+                    : 'list-group-item-danger'
+                }`}
+              >
+                <span>
+                  {challenge.title} ({challenge.difficulty}) - {challenge.essenceReward} Essence
+                </span>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => handleCompleteChallenge(challenge._id)}
+                >
+                  Complete
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+
       <h2>Completed Challenges</h2>
       <ul>
         {challenges

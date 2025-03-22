@@ -40,15 +40,26 @@ function Dashboard({ user, token, socket, setUser, setToken, setMessage, logout 
   const progressPercentage = Math.min((currentEssence / nextThreshold) * 100, 100);
 
   return (
-    <div>
-      <p>Welcome, {user.username}! Rank: {user.rank} | Essence: {user.essence}</p>
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${progressPercentage}%` }}></div>
-        <span className="progress-text">
-          {currentEssence}/{nextThreshold} to {nextRank}
-        </span>
+    <div className="container py-4">
+      <h1 className="text-primary mb-4">Welcome, {user.username}!</h1>
+      <p className="lead">
+        Rank: <strong>{user.rank}</strong> | Essence: <strong>{user.essence}</strong>
+      </p>
+      <div className="progress mb-4">
+        <div
+          className="progress-bar bg-success"
+          role="progressbar"
+          style={{ width: `${progressPercentage}%` }}
+          aria-valuenow={progressPercentage}
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          {progressPercentage}%
+        </div>
       </div>
-      <button onClick={logout}>Logout</button>
+      <button className="btn btn-danger" onClick={logout}>
+        Logout
+      </button>
 
       <Leaderboard leaderboard={leaderboard} />
       <ChallengeForm token={token} setMessage={setMessage} fetchChallenges={fetchChallenges} />
