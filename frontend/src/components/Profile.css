@@ -1,0 +1,21 @@
+.profile-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.achievements-list {
+  list-style: none;
+  padding: 0;
+}
+
+.achievement-badge {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
