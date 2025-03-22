@@ -8,7 +8,8 @@ const challengeSchema = new mongoose.Schema({
   difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'], required: true }, // Difficulty level
   essenceReward: { type: Number, required: true },         // Points awarded on completion
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }, // Approval status
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // User who submitted the challenge
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // User who submitted the challenge
+  dailyChallenge: { type: Boolean, default: false },       // New: Marks if this is the daily challenge
 });
 
 module.exports = mongoose.model('Challenge', challengeSchema);

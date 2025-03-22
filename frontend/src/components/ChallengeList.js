@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // ChallengeList component - displays available and completed challenges
 function ChallengeList({ user, token, challenges, setUser, setMessage, fetchChallenges }) {
+  const [dailyChallenge, setDailyChallenge] = useState(null);
+
+  useEffect(() => {
+    fetchDailyChallenge();
+  }, []);
+
+  const fetchDailyChallenge = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/challenges/daily');
+      setDailyChallenge(response.data);
+    } catch (err) {
+      console.error('Failed to fetch daily challenge:', err);
+    }
+  };
+
   // Complete a challenge via POST /api/challenges/complete
   const handleCompleteChallenge = async (challengeId) => {
     try {
@@ -21,6 +36,18 @@ function ChallengeList({ user, token, challenges, setUser, setMessage, fetchChal
 
   return (
     <>
+      <h2>Daily Challenge</h2>
+      {dailyChallenge ? (
+        <div className="daily-challenge">
+          <h3>{dailyChallenge.title}</h3>
+          <p>{dailyChallenge.description}</p>
+          <p>Essence Reward: {dailyChallenge.essenceReward}</p>
+          <button onClick={() => handleCompleteChallenge(dailyChallenge._id)}>Complete</button>
+        </div>
+      ) : (
+        <p>No daily challenge available.</p>
+      )}
+
       <h2>Available Challenges</h2>
       <ul>
         {challenges

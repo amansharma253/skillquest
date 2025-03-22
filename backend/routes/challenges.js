@@ -32,6 +32,20 @@ module.exports = (authMiddleware) => {
     }
   });
 
+  // GET /api/challenges/daily - Fetch the daily challenge (public)
+  router.get('/daily', async (req, res) => {
+    try {
+      const dailyChallenge = await Challenge.findOne({ dailyChallenge: true });
+      if (!dailyChallenge) {
+        return res.status(404).json({ error: 'No daily challenge found' });
+      }
+      res.json(dailyChallenge);
+    } catch (err) {
+      console.error('Error fetching daily challenge:', err);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+
   // POST /api/challenges/create - Create a new challenge (pending status)
   router.post('/create', authMiddleware, async (req, res) => {
     const { title, description, skill, difficulty, essenceReward } = req.body;
