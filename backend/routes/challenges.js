@@ -39,7 +39,14 @@ module.exports = (authMiddleware) => {
       if (!dailyChallenge) {
         return res.status(404).json({ error: 'No daily challenge found' });
       }
-      res.json(dailyChallenge);
+
+      // Calculate the next reset time (24 hours from the last reset)
+      const now = new Date();
+      const resetTime = new Date();
+      resetTime.setUTCHours(0, 0, 0, 0); // Reset at midnight UTC
+      resetTime.setUTCDate(resetTime.getUTCDate() + 1);
+
+      res.json({ dailyChallenge, resetTime });
     } catch (err) {
       console.error('Error fetching daily challenge:', err);
       res.status(500).json({ error: 'Server error' });
