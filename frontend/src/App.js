@@ -9,7 +9,7 @@ function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [message, setMessage] = useState('');
 
-  const socket = io('http://localhost:5000', { autoConnect: false });
+  const socket = io(process.env.REACT_APP_API_URL || 'https://skillquest-ah5g.onrender.com', { autoConnect: false }); // Updated URL
 
   useEffect(() => {
     return () => {

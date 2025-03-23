@@ -7,7 +7,7 @@ function PendingChallenges({ token, pendingChallenges, setMessage, fetchPendingC
   const handleApproveChallenge = async (challengeId, action) => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/challenges/approve',
+        `${process.env.REACT_APP_API_URL || 'https://skillquest-ah5g.onrender.com'}/api/challenges/approve`,
         { challengeId, action },
         { headers: { Authorization: `Bearer ${token}` } }
       );

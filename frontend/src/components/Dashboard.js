@@ -85,7 +85,9 @@ function Dashboard({ user, token, socket, setUser, setToken, setMessage, logout 
 
   async function fetchChallenges() {
     try {
-      const response = await axios.get('http://localhost:5000/api/challenges');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL || 'https://skillquest-ah5g.onrender.com'}/api/challenges`
+      );
       setChallenges(response.data);
     } catch (err) {
       console.error('Failed to fetch challenges:', err);
@@ -95,7 +97,7 @@ function Dashboard({ user, token, socket, setUser, setToken, setMessage, logout 
 
   async function fetchPendingChallenges() {
     try {
-      const response = await axios.get('http://localhost:5000/api/challenges/pending', {
+      const response = await axios.get('https://skillquest-ah5g.onrender.com/api/challenges/pending', { // Updated URL
         headers: { Authorization: `Bearer ${token}` },
       });
       setPendingChallenges(response.data);
@@ -106,7 +108,7 @@ function Dashboard({ user, token, socket, setUser, setToken, setMessage, logout 
 
   async function fetchLeaderboard() {
     try {
-      const response = await axios.get('http://localhost:5000/api/users/leaderboard');
+      const response = await axios.get('https://skillquest-ah5g.onrender.com/api/users/leaderboard'); // Updated URL
       setLeaderboard(response.data);
     } catch (err) {
       console.error('Failed to fetch leaderboard:', err);

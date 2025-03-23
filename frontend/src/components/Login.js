@@ -5,9 +5,13 @@ function Login({ setUser, setToken, setMessage }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', { username, password });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL || 'https://skillquest-ah5g.onrender.com'}/api/users/register`,
+        { username, password }
+      );
       setMessage(`Registered successfully as: ${response.data.username}`);
       setUsername('');
       setPassword('');
@@ -17,9 +21,13 @@ function Login({ setUser, setToken, setMessage }) {
     }
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL || 'https://skillquest-ah5g.onrender.com'}/api/users/login`,
+        { username, password }
+      );
       setUser(response.data.user);
       setToken(response.data.token);
       setMessage(`Logged in successfully as: ${response.data.user.username}`);
@@ -35,26 +43,28 @@ function Login({ setUser, setToken, setMessage }) {
     <div className="split-background">
       <div className="login-container">
         <div className="typing-container">SkillQuest</div>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div className="button-group">
-          <button className="register" onClick={handleRegister}>
-            Register
-          </button>
-          <button className="login" onClick={handleLogin}>
-            Login
-          </button>
-        </div>
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <div className="button-group">
+            <button type="button" className="register" onClick={handleRegister}>
+              Register
+            </button>
+            <button type="submit" className="login">
+              Login
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ function ChallengeForm({ token, setMessage, fetchChallenges }) {
   const handleCreateChallenge = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/challenges/create',
+        'https://skillquest-ah5g.onrender.com/api/challenges/create', // Updated URL
         { ...newChallenge, essenceReward: parseInt(newChallenge.essenceReward) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
