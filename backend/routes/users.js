@@ -16,7 +16,7 @@ router.post('/register', async (req, res) => {
       console.log('Missing username or password'); // Log validation failure
       return res.status(400).json({ error: 'Username and password required' });
     }
-    const hashedPassword = await bcrypt.hash(password, 12); // Increase salt rounds to 12
+    const hashedPassword = await bcrypt.hash(password, 12); // Hash password
     console.log('Password hashed:', hashedPassword); // Log hash success
     const user = new User({ 
       username, 

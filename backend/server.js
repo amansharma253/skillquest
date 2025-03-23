@@ -4,6 +4,8 @@ const cors = require('cors');
 const compression = require('compression');
 require('dotenv').config();
 
+const usersRoutes = require('./routes/users'); // Import users routes
+
 const app = express();
 const PORT = process.env.PORT || 5000; // Use PORT from environment variables
 const MONGO_URI = process.env.MONGO_URI; // Use MONGO_URI from environment variables
@@ -21,6 +23,9 @@ mongoose
 
 // Routes
 app.get('/', (req, res) => res.send('SkillQuest Backend Running'));
+
+// Mount routes
+app.use('/api/users', usersRoutes); // Mount users routes at /api/users
 
 // Start Server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
