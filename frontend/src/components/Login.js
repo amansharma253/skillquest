@@ -6,7 +6,7 @@ function Login({ setUser, setToken, setMessage }) {
   const [password, setPassword] = useState('');
 
   const handleRegister = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL || 'https://skillquest-ah5g.onrender.com'}/api/users/register`,
@@ -55,6 +55,7 @@ function Login({ setUser, setToken, setMessage }) {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autocomplete="current-password" // Added to fix DOM warning
           />
           <div className="button-group">
             <button type="button" className="register" onClick={handleRegister}>
